@@ -1,6 +1,6 @@
 {
   "name": "dtf-report-bot",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,7 +12,7 @@
     "db:remote": "wrangler d1 migrations apply dtf-report-db --remote"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250129.0",
+    "@cloudflare/workers-types": "^5.20261119.1",
     "typescript": "^5.7.3",
     "vitest": "^2.1.9",
     "wrangler": "^4.0.0"
