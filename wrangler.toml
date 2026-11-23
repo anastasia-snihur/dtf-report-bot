@@ -1,0 +1,12 @@
+name = "dtf-report-bot"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+[triggers]
+crons = ["50 13 * * *", "50 14 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dtf-report-db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
