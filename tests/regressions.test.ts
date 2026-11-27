@@ -1,0 +1,11 @@
+import {describe,it,expect} from 'vitest';
+import {deadline,kyivDate,overdue,reportParts,shouldRun,type Order} from '../src/domain';
+const base:Order={source_chat_id:'-100123456789',source_message_id:1,order_number:'Z0001',description:'test',published_at:Date.parse('2026-10-01T12:00:00Z')/1000,deadline:'2026-10-08',reaction_fire:0,reaction_heart:0};
+describe('regressions',()=>{
+it('uses Kyiv calendar date near midnight',()=>expect(kyivDate(new Date('2026-07-01T22:30:00Z'))).toBe('2026-07-02'));
+it('does not count Saturday or Sunday as overdue',()=>{expect(overdue('2026-10-09','2026-10-11')).toBe(0);expect(overdue('2026-10-09','2026-10-12')).toBe(1)});
+it('calculates Friday and Sunday deadlines',()=>{expect(deadline(Date.parse('2026-10-02T12:00:00Z')/1000)).toBe('2026-10-09');expect(deadline(Date.parse('2026-10-04T12:00:00Z')/1000)).toBe('2026-10-09')});
+it('does not run an hour early in winter or summer',()=>{expect(shouldRun(new Date('2026-11-23T13:50:00Z'))).toBe(false);expect(shouldRun(new Date('2026-07-01T14:50:00Z'))).toBe(false)});
+it('sorts overdue first and preserves both sections',()=>{const orders=[{...base,source_message_id:1,order_number:'Z0001',deadline:'2026-11-25',published_at:100},{...base,source_message_id:2,order_number:'Z0002',deadline:'2026-11-10',published_at:200},{...base,source_message_id:3,order_number:'Z0003',reaction_fire:1,deadline:'2026-11-25',published_at:300}];const text=reportParts(orders,new Date('2026-11-23T14:50:00Z')).join('');expect(text.indexOf('Z0002')).toBeLessThan(text.indexOf('Z0001'));expect(text).toContain('ПЛІВКУ НАДРУКОВАНО')});
+it('keeps each order exactly once in a long report',()=>{const orders=Array.from({length:100},(_,i)=>({...base,source_message_id:i+1,order_number:'Z'+String(i).padStart(4,'0'),description:'Друк '.repeat(12)}));const parts=reportParts(orders,new Date('2026-11-23T14:50:00Z'));expect(parts.length).toBeGreaterThan(1);for(const part of parts)expect(part.replace(/<[^>]+>/g,'').length).toBeLessThanOrEqual(4096);for(const order of orders)expect(parts.join('').split('>'+order.order_number+'</b>').length-1).toBe(1)});
+});

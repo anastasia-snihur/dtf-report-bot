@@ -1,0 +1,8 @@
+{
+  "name": "DTF Report Bot",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
+  "postCreateCommand": "npm install",
+  "forwardPorts": [
+    8787
+  ]
+}
